@@ -1,0 +1,34 @@
+{
+  // VS Code debug config — attach to debugpy inside the pygoat container.
+  //
+  // Workflow:
+  //   1. `docker compose up` in this folder. Container starts, installs
+  //      debugpy, prints "Waiting for client..." on 0.0.0.0:5678.
+  //   2. F5 here (or pick "Attach to pygoat (Docker)" from Run and Debug).
+  //   3. VS Code connects to localhost:5678. Container unblocks, Django boots.
+  //   4. Visit http://localhost:8000 — breakpoints fire.
+  //
+  // Path mapping: VS Code sets breakpoints by host file path
+  // (/Users/ag/.../targets/06-pygoat/introduction/views.py). The container
+  // sees the same file as /app/introduction/views.py. pathMappings translates.
+
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Attach to pygoat (Docker)",
+      "type": "debugpy",
+      "request": "attach",
+      "connect": {
+        "host": "localhost",
+        "port": 5678
+      },
+      "pathMappings": [
+        {
+          "localRoot": "${workspaceFolder}",
+          "remoteRoot": "/app"
+        }
+      ],
+      "justMyCode": false
+    }
+  ]
+}

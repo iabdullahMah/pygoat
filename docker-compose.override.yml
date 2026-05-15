@@ -1,0 +1,30 @@
+# docker-compose.override.yml — Debug overrides for pygoat
+#
+# Auto-merged by `docker compose up` with the base docker-compose.yml.
+#
+# Changes vs. base:
+#   1. Replaces gunicorn (6 workers) with single-process Django runserver.
+#   2. Wraps it in debugpy --listen 0.0.0.0:5678 --wait-for-client so VS Code
+#      can attach. --wait-for-client pauses Django boot until you attach.
+#   3. Exposes 5678 for debugpy.
+#   4. --noreload disables Django's autoreloader (forks a child; would
+#      break debugpy attach).
+#   5. Installs debugpy at container start (keeps base Dockerfile clean).
+#
+# Disable debug mode: rename file (e.g. .yml.off). `docker compose up` then
+# reverts to the gunicorn default.
+
+services:
+  web:
+    command: sh -c "pip install --no-cache-dir debugpy && python -m debugpy --listen 0.0.0.0:5678 --wait-for-client manage.py runserver 0.0.0.0:8000 --noreload"
+    ports:
+      - "8000:8000"
+      - "5678:5678"
+    stdin_open: true
+    tty: true
+
+  # Force migration to use the locally-built image (not pygoat/pygoat:latest
+  # from Docker Hub, which may be stale or missing).
+  migration:
+    build: .
+    image: pygoat-local:latest
