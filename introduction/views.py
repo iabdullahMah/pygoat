@@ -39,9 +39,7 @@ from .models import (FAANG, AF_admin, AF_session_id, Blogs, CF_user, authLogin,
                      comments, info, login, otp, sql_lab_table, tickits)
 from .utility import customHash, filter_blog
 
-#*****************************************Lab Requirements****************************************************#
 
-#*****************************************Login and Registration****************************************************#
 
 def register(request):
 	if request.method == "POST":
@@ -55,16 +53,7 @@ def register(request):
 	form = NewUserForm()
 	return render (request=request, template_name="registration/register.html", context={"register_form":form})
 
-# def register(request):
-#     if request.method=="POST":
-#         form = UserCreationForm(request.POST)
-#         if form.is_valid():
-#             form.save()
-#         return redirect("login")
 
-#     else:
-#         form=UserCreationForm()
-#         return render(request,"registration/register.html",{"form":form,})
 
 def home(request):
     if request.user.is_authenticated:
@@ -72,7 +61,6 @@ def home(request):
     else:
         return redirect('login')
 
-## authentication check decurator function 
 def authentication_decorator(func):
     def function(*args, **kwargs):
         if args[0].user.is_authenticated:
@@ -81,7 +69,6 @@ def authentication_decorator(func):
             return redirect('login')
     return function
 
-#*****************************************XSS****************************************************#
 
 
 def xss(request):
@@ -123,8 +110,6 @@ def xss_lab3(request):
     if request.user.is_authenticated:
         if request.method == 'POST':
             username = request.POST.get('username', '')
-            # Remove only alphanumeric characters (letters and digits)
-            # This allows special characters like []()!+ for JSFuck-style payloads
             pattern = r'[a-zA-Z0-9]'
             result = re.sub(pattern, '', username)
             context = {'code':result}
@@ -135,7 +120,6 @@ def xss_lab3(request):
     else:        
         return redirect('login')
 
-#***********************************SQL****************************************************************#
 
 def sql(request):
     if request.user.is_authenticated:
@@ -188,7 +172,6 @@ def sql_lab(request):
     else:
         return redirect('login')
 
-#***************** INSECURE DESERIALIZATION***************************************************************#
 
 def insec_des(request):
     if request.user.is_authenticated:
@@ -220,7 +203,6 @@ def insec_des_lab(request):
     else:
         return redirect('login')
 
-#****************************************************XXE********************************************************#
 
 
 def xxe(request):
@@ -239,7 +221,6 @@ def xxe_lab(request):
 @csrf_exempt
 def xxe_see(request):
     if request.user.is_authenticated:
-        # Get first comment or create a default one if none exist
         comment_obj = comments.objects.first()
         if comment_obj is None:
             comment_obj = comments.objects.create(
@@ -330,7 +311,6 @@ def auth_lab_logout(request):
     response.delete_cookie('userid')
     return response
 
-#***************************************************************Broken Access Control************************************************************#
 
 @csrf_exempt
 def ba(request):
@@ -380,7 +360,6 @@ def ba_lab(request):
     else:
         return redirect('login')
 
-#********************************************************Sensitive Data Exposure*****************************************************#
 
 
 def data_exp(request):
@@ -404,7 +383,6 @@ def error(request):
     return 
 
 
-#******************************************************  Command Injection  ***********************************************************************#
 
 def cmd(request):
     if request.user.is_authenticated:
@@ -416,7 +394,6 @@ def cmd_lab(request):
     if request.user.is_authenticated:
         if(request.method=="POST"):
             domain=request.POST.get('domain')
-            # Remove all common protocols (case-insensitive) and www prefix
             domain = re.sub(r'^(?:(https?|ftp)://)?(?:www\.)?', '', domain, flags=re.IGNORECASE)
             os=request.POST.get('os')
             print(os)
@@ -426,7 +403,6 @@ def cmd_lab(request):
                 command = "dig {}".format(domain)
             
             try:
-                # output=subprocess.check_output(command,shell=True,encoding="UTF-8")
                 process = subprocess.Popen(
                     command,
                     shell=True,
@@ -435,8 +411,6 @@ def cmd_lab(request):
                 stdout, stderr = process.communicate()
                 data = stdout.decode('utf-8')
                 stderr = stderr.decode('utf-8')
-                # res = json.loads(data)
-                # print("Stdout\n" + data)
                 output = data + stderr
                 print(data + stderr)
             except:
@@ -468,7 +442,6 @@ def cmd_lab2(request):
     else:
         return redirect('login')
 
-#******************************************Broken Authentication**************************************************#
 
 def bau(request):
     if request.user.is_authenticated:
@@ -512,13 +485,11 @@ def Otp(request):
         otpR=request.POST.get("otp")
         email=request.COOKIES.get("email")
         if otp.objects.filter(email=email,otp=otpR) or otp.objects.filter(id=2,otp=otpR):
-            # return HttpResponse("<h3>Login Success for email:::"+email+"</h3>")
             return render (request,"Lab/BrokenAuth/otp.html",{"email":email})
         else:
             return render (request,"Lab/BrokenAuth/otp.html",{"otp":"Invalid OTP Please Try Again"})
 
 
-#*****************************************Security Misconfiguration**********************************************#
 
 def sec_mis(request):
     if request.user.is_authenticated:
@@ -540,7 +511,6 @@ def secret(request):
         return render(request,"Lab/sec_mis/sec_mis_lab.html", {"no_secret": "Only admin.localhost:8000 can access, Your X-Host is " + XHost})
 
 
-#**********************************************************A9*************************************************#
 
 def a9(request):
     if request.user.is_authenticated:
@@ -584,10 +554,8 @@ def a9_lab2(request):
             img  = Image.open(file)
             img = img.convert("RGB")
             r,g,b  = img.split()
-            # function_str = "convert(r+g, '1')"
             output = ImageMath.eval(function_str,img = img, b=b, r=r, g=g)
 
-            # saving the image 
             buffered = BytesIO()
             output.save(buffered, format="JPEG")
             img_str = base64.b64encode(buffered.getvalue()).decode("utf-8")
@@ -609,7 +577,6 @@ def a9_lab2(request):
 def A9_discussion(request):
     return render(request, "playground/A9/index.html")
 
-#*********************************************************A10*************************************************#
 
 def a10(request):
     if request.user.is_authenticated:
@@ -638,7 +605,6 @@ def debug(request):
     response['Content-Type'] =  'text/plain'
     return response
 
-# Logging basic configuration
 logging.basicConfig(level=logging.DEBUG,filename='app.log')
 
 @authentication_decorator
@@ -674,7 +640,6 @@ def a10_lab2(request):
         
 
 
-#*********************************************************A11*************************************************#
 
 def gentckt():
     return (''.join(random.choices(string.ascii_uppercase + string.ascii_lowercase, k=10)))
@@ -730,10 +695,7 @@ def insec_desgine_lab(request):
         return redirect('login')
 
 
-#-------------------------------------------------------------------------------------------------------------------------
-#-------------------------------------------------------------------------------------------------------------------------
 
-###################################################### 2021 A1: Broken Access
 
 @csrf_exempt
 def a1_broken_access(request):
@@ -763,7 +725,8 @@ def a1_broken_access_lab_1(request):
                     "data":"0NLY_F0R_4DM1N5",
                     "username": "admin"
                 })
-        elif (name=='jack' and password=='jacktheripper'): # Will implement hashing here
+        elif (name=='jack' and password=='jacktheripper'): 
+
             html = render(
             request, 
             'Lab_2021/A1_BrokenAccessControl/broken_access_lab_1.html', 
@@ -790,8 +753,6 @@ def a1_broken_access_lab_2(request):
     password = request.POST.get('pass')
     user_agent = request.META['HTTP_USER_AGENT']
 
-    # print(name)
-    # print(password)
     print(user_agent)
     if name :  
         if (user_agent == "pygoat_admin"):
@@ -803,7 +764,8 @@ def a1_broken_access_lab_2(request):
                     "username": "admin",
                     "status": "admin"
                 })
-        elif ( name=='jack' and password=='jacktheripper'): # Will implement hashing here
+        elif ( name=='jack' and password=='jacktheripper'): 
+
             html = render(
             request, 
             'Lab_2021/A1_BrokenAccessControl/broken_access_lab_2.html', 
@@ -837,11 +799,9 @@ def a1_broken_access_lab_3(request):
 def a1_broken_access_lab3_secret(request):
     if not request.user.is_authenticated:
         return redirect('login')
-    # no checking applied here
     return render(request, 'Lab_2021/A1_BrokenAccessControl/secret.html')
 
 
-###################################################### 2021 A3: Injection
 
 @csrf_exempt
 def injection(request):
@@ -904,10 +864,7 @@ def injection_sql_lab(request):
         return redirect('login')
 
 
-##----------------------------------------------------------------------------------------------------------
-##----------------------------------------------------------------------------------------------------------
 
-#*********************************************************SSRF*************************************************#
 
 def ssrf(request):
     if request.user.is_authenticated:
@@ -964,7 +921,6 @@ def ssrf_lab2(request):
             return render(request, "Lab/ssrf/ssrf_lab2.html", {"response": response.content.decode()})
         except:
             return render(request, "Lab/ssrf/ssrf_lab2.html", {"error": "Invalid URL"})
-#--------------------------------------- Server-side template injection --------------------------------------#
 
 def ssti(request):
     if request.user.is_authenticated:
@@ -1007,7 +963,6 @@ def ssti_view_blog(request,blog_id):
         elif request.method=="POST":
             return HttpResponseBadRequest()
 
-#-------------------------Cryptographic Failure -----------------------------------#
 
 def crypto_failure(request):
     if request.user.is_authenticated:
@@ -1045,7 +1000,6 @@ def crypto_failure_lab2(request):
             except:
                 return render(request,"Lab_2021/A2_Crypto_failur/crypto_failure_lab2.html",{"success":False, "failure":True})
 
-# based on CWE-319
 def crypto_failure_lab3(request):
     if request.user.is_authenticated:
         if request.method == "GET":
@@ -1083,7 +1037,6 @@ def crypto_failure_lab3(request):
             except:
                 return render(request,"Lab_2021/A2_Crypto_failur/crypto_failure_lab2.html",{"success":False, "failure":True})
 
-#-----------------------------------------------SECURITY MISCONFIGURATION -------------------
 from pygoat.settings import SECRET_COOKIE_KEY
 
 
@@ -1109,15 +1062,12 @@ def sec_misconfig_lab3(request):
         response.set_cookie(key = "auth_cookie", value = cookie)
         return response
 
-# - ------------------------Identification and Authentication Failures--------------------------------
 @authentication_decorator
 def auth_failure(request):    
     if request.method == "GET":
         return render(request,"Lab_2021/A7_auth_failure/a7.html")
 
 
-## used admin password --> 2022_in_pygoat@pygoat.com  
-# ## not a easy password to be brute forced 
 @authentication_decorator
 def auth_failure_lab2(request):
     if request.method == "GET":
@@ -1142,7 +1092,6 @@ def auth_failure_lab2(request):
                     user.save()
                 return render(request,"Lab_2021/A7_auth_failure/lab2.html", {"user":user, "success":True,"failure":False})
             except:
-                # fail attempt
                 print("wrong password")
                 fail_attempt = user.failattempt + 1
                 if fail_attempt == 5:
@@ -1159,7 +1108,6 @@ def auth_failure_lab2(request):
             print(e)
             return render(request,"Lab_2021/A7_auth_failure/lab2.html",{"success":False, "failure":True})
 
-## Hardcoed user table for demonstration purpose only
 USER_A7_LAB3 = {
     "User1":{"userid":"1", "username":"User1", "password": "491a2800b80719ea9e3c89ca5472a8bda1bdd1533d4574ea5bd85b70a8e93be0"},
     "User2":{"userid":"2", "username":"User2", "password": "c577e95bf729b94c30a878d01155693a9cdddafbb2fe0d52143027474ecb91bc"},
@@ -1167,12 +1115,6 @@ USER_A7_LAB3 = {
     "User4":{"userid":"4", "username":"User4", "password": "6046bc3337728a60967a151ee584e4fd7c53740a49485ebdc38cac42a255f266"}
 }
 
-# USER_A7_LAB3 = {
-#     "User1":{"userid":"1", "username":"User1", "password": "Hash1"},
-#     "User2":{"userid":"2", "username":"User2", "password": "Hash2"},
-#     "User3":{"userid":"3", "username":"User3", "password": "Hash3"},
-#     "User4":{"userid":"4", "username":"User4", "password": "Hash4"}
-# }
 
 @authentication_decorator
 @csrf_exempt
@@ -1204,12 +1146,10 @@ def auth_failure_lab3(request):
             response.set_cookie("session_id", token)
             return response
 
-#-- coding playground for lab2
 @authentication_decorator
 def A7_discussion(request):
     return render(request,"playground/A7/index.html")
         
-## ---------------------Software and Data Integrity Failures-------------------------------------------
 @authentication_decorator
 def software_and_data_integrity_failure(request):
     if request.method == "GET":
@@ -1230,7 +1170,6 @@ def software_and_data_integrity_failure_lab2(request):
 def software_and_data_integrity_failure_lab3(request):
     pass
 
-## --------------------------A6_discussion-------------------------------------------------------
 
 @authentication_decorator
 def A6_discussion(request):

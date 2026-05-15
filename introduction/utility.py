@@ -5,7 +5,6 @@ import uuid
 from .models import *
 
 
-# import re
 def ssrf_code_converter(code):
     list_input = code.split("\n")
     del_l = []
@@ -37,7 +36,6 @@ def ssrf_code_converter(code):
     f.close()
     return 1
 
-# ssrf_code_converter(input_code)
 def ssrf_html_input_extractor(code):
     params = []
     list_input = code.split("\n")

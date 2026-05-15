@@ -11,14 +11,10 @@ from django.views.decorators.csrf import csrf_exempt
 from .models import CSRF_user_tbl
 from .views import authentication_decorator
 
-# import os
 
-## Mitre top1 | CWE:787
 
-# target zone
 FLAG = "NOT_SUPPOSED_TO_BE_ACCESSED"
 
-# target zone end
 
 
 @authentication_decorator
@@ -210,7 +206,6 @@ def csrf_transfer_monei_api(request,recipent,amount):
         return redirect ('/mitre/9/lab/transaction')
 
 
-# @authentication_decorator
 @csrf_exempt
 def mitre_lab_25_api(request):
     if request.method == "POST":

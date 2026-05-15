@@ -1,6 +1,6 @@
 from django.contrib import admin
 from .models import Challenge, UserChallenge
-# Register your models here.
+                            
 
 @admin.register(Challenge)
 class ChallengeAdmin(admin.ModelAdmin):

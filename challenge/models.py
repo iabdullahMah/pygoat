@@ -1,7 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
-import hashlib # Import hashlib
-from django.core.exceptions import ValidationError  # Import ValidationError
+import hashlib                 
+from django.core.exceptions import ValidationError                          
 
 class Challenge(models.Model):
     id = models.AutoField(primary_key=True, unique=True)
@@ -19,20 +19,20 @@ class Challenge(models.Model):
     def __str__(self):
         return self.name
     
-    # Overriding default save method
+                                    
     def save(self, *args, **kwargs):
         if self.start_port > self.end_port:
-            raise ValidationError("Start port should be less than end port") # Raise ValidationError if start_port is greater than end_port
+            raise ValidationError("Start port should be less than end port")                                                               
         if self.flag:
             if not self.flag.startswith("hashed_"):
                 self.flag = "hashed_" + hashlib.sha256(self.flag.encode('utf-8')).hexdigest()
         super(Challenge, self).save(*args, **kwargs)
 
 class UserChallenge(models.Model):
-    """
-    This is a mapping of user to challenge with proper progress tracking 
-    This also allows us to reuse the created container for the user
-    """
+    \
+\
+\
+\
     id = models.AutoField(primary_key=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     challenge = models.ForeignKey(Challenge, on_delete=models.CASCADE)

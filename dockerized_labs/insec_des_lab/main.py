@@ -11,7 +11,7 @@ class User:
     is_admin: bool = False
 
     def __reduce__(self):
-        # Intentionally vulnerable __reduce__ method to match PyGoat
+                                                                    
         return (User, (self.username, self.is_admin))
 
 @app.route('/')
@@ -21,9 +21,9 @@ def index():
 @app.route('/serialize', methods=['POST'])
 def serialize_data():
     username = request.form.get('username', 'guest')
-    # Create regular user with admin=False
+                                          
     user = User(username=username, is_admin=False)
-    # Match PyGoat's serialization format
+                                         
     serialized = base64.b64encode(pickle.dumps(user)).decode()
     return render_template('result.html', serialized=serialized)
 
@@ -32,7 +32,7 @@ def deserialize_data():
     try:
         serialized_data = request.form.get('serialized_data', '')
         decoded_data = base64.b64decode(serialized_data)
-        # Intentionally vulnerable deserialization, matching PyGoat
+                                                                   
         user = pickle.loads(decoded_data)
         
         if isinstance(user, User):
@@ -50,4 +50,3 @@ def deserialize_data():
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8080)
 
-    

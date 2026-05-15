@@ -33,12 +33,10 @@ def log_function_target(request):
     return JsonResponse({"message":"method not allowed"},status = 403)
 
 
-# ======================================
 
 import datetime
 
 
-# f = open('test.log', 'a') --> use this file to log
 class Log:
     def __init__(self,request):
         self.request = request

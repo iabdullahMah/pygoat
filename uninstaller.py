@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 import ctypes
 import os
 import platform
@@ -9,13 +8,7 @@ from shutil import rmtree, which
 import colorama
 
 
-# Platform indepent way to check if user is admin
 def is_user_admin():
-    """
-    Check if the script is being run as root/admin
-
-    Return False if privileges cannot be determined
-    """
     if platform.system() == 'Windows':
         try:
             return ctypes.windll.shell32.IsUserAnAdmin() == 1
@@ -29,13 +22,10 @@ def is_user_admin():
             return False
 
 
-# Uninstall Pip packages in a platform independent way
 def uninstall_pip_packages():
-    """Remove pip packages installed by pygoat"""
     print(colorama.Back.CYAN + colorama.Style.BRIGHT + "[+] Uninstalling Pip packages!" + colorama.Style.RESET_ALL)
 
     try:
-        # It is important to upgrade pip first to avoid environment errors
         if (platform.system != 'Windows'):
             pip_v = "pip3" if (which('pip3') is not None) else "pip"
             subprocess.run([pip_v,
@@ -54,9 +44,7 @@ def uninstall_pip_packages():
         print(colorama.Fore.RED + colorama.Style.BRIGHT + "[!] Failed to uninstall pip packages" + colorama.Style.RESET_ALL)
 
 
-# Uninstall PIP
 def uninstall_pip():
-    """Remove Pip"""
     print(colorama.Back.RED + colorama.Style.BRIGHT + "[+] Uninstalling Pip!" + colorama.Style.RESET_ALL)
     try:
         subprocess.check_call([sys.executable,
@@ -69,9 +57,7 @@ def uninstall_pip():
         print(colorama.Fore.RED + colorama.Style.BRIGHT + "[!] Failed to uninstall pip" + colorama.Style.RESET_ALL)
 
 
-# Remove pygoat
 def remove_pygoat():
-    """Remove pygoat files"""
     cwd = os.getcwd()
     print(colorama.Back.RED + colorama.Style.BRIGHT + f"All files in {cwd} will be deleted!" + colorama.Style.RESET_ALL)
 
@@ -97,23 +83,18 @@ def remove_pygoat():
 def main():
     colorama.init()
 
-    # Check if program is being run as admin
-    # However, you need admin privileges only if you are not in a venv
     if(not is_user_admin() and sys.prefix == sys.base_prefix):
         print(colorama.Fore.RED + colorama.Style.BRIGHT + "[!] This script must be run as root!" + colorama.Style.RESET_ALL)
         sys.exit(-1)
 
-    # Remove pip packages
     uninstall_pip_packages()
 
-    # Remove pip
     choice = input("Uninstall pip? (y/N) ")
     if (choice.upper() == 'Y' or choice.upper() == 'YES'):
         uninstall_pip()
     else:
         print(colorama.Back.CYAN + colorama.Style.BRIGHT + "[+] Pip has been kept intact" + colorama.Style.RESET_ALL)
 
-    # Remove pygoat files
     choice = input(
         "Would you like to remove all pygoat directories and files? (y/N) "
     )
@@ -132,7 +113,6 @@ def main():
 
     print(colorama.Back.RED + colorama.Style.BRIGHT + "Uninstallations Done!" + colorama.Style.RESET_ALL)
 
-    # Restore output streams to their original values
     colorama.deinit()
 
 

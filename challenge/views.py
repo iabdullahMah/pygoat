@@ -5,7 +5,7 @@ from django.views.decorators.csrf import csrf_exempt
 import subprocess
 from .utility import get_free_port
 from .models import Challenge, UserChallenge
-# Create your views here.
+                         
 
 
 class DoItFast(View):
@@ -29,12 +29,12 @@ class DoItFast(View):
         if not request.user.is_authenticated:
             return redirect('login')
         
-        try: # checking the existance of challenge
+        try:                                      
             chal = Challenge.objects.get(name=challenge)
         except Exception as e:
             return render(request, 'chal-not-found.html')
 
-        try: # checking if he attempted it before or not, if yes then check if the container is live or not
+        try:                                                                                               
             user_chal = UserChallenge.objects.get(user=request.user, challenge=chal)
             if user_chal.is_live:
                 return JsonResponse({'message':'already running', 'status': '200', 'endpoint': f'http://localhost:{user_chal.port}'})
@@ -52,7 +52,7 @@ class DoItFast(View):
         container_id = output.decode('utf-8').strip()
         
         if user_chall_exists:
-            # TODO : reuse the container instead of creaing the new one
+                                                                       
             user_chal.container_id = container_id
             user_chal.port = port
             user_chal.is_live = True
@@ -60,7 +60,7 @@ class DoItFast(View):
         else:
             user_chal = UserChallenge(user=request.user, challenge=chal, container_id=container_id, port=port)
             user_chal.save()
-        # save the output in database for stoping the container 
+                                                                
         return JsonResponse({'message': 'success', 'status': '200', 'endpoint': f'http://localhost:{port}'})
 
 
@@ -83,6 +83,5 @@ class DoItFast(View):
         return JsonResponse({'message': 'success', 'status': '200'})
     
     def put(self, request, challange):
-        # TODO : implement flag checking
+                                        
         return "not implemented"
-    

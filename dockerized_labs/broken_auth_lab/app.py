@@ -5,23 +5,23 @@ from datetime import datetime, timedelta
 import base64
 
 app = Flask(__name__)
-app.secret_key = 'your-secret-key-here'  # Vulnerable: Hardcoded secret key
+app.secret_key = 'your-secret-key-here'                                    
 
-# Vulnerable: Storing user data in memory
+                                         
 users = {
     'admin': {
-        'password': 'admin123',  # Vulnerable: Weak password
+        'password': 'admin123',                             
         'email': 'admin@example.com',
         'role': 'admin'
     },
     'user': {
-        'password': 'password123',  # Vulnerable: Weak password
+        'password': 'password123',                             
         'email': 'user@example.com',
         'role': 'user'
     }
 }
 
-# Vulnerable: Storing reset tokens in memory
+                                            
 password_reset_tokens = {}
 
 @app.route('/')
@@ -38,14 +38,14 @@ def login():
     password = request.form.get('password')
     remember_me = request.form.get('remember_me')
 
-    if username in users and users[username]['password'] == password:  # Vulnerable: Plain text password comparison
+    if username in users and users[username]['password'] == password:                                              
         response = make_response(redirect(url_for('dashboard')))
         
-        # Vulnerable: Insecure session management
+                                                 
         session_token = base64.b64encode(f"{username}:{datetime.now()}".encode()).decode()
         
         if remember_me:
-            # Vulnerable: Insecure "Remember Me" implementation
+                                                               
             response.set_cookie('session', session_token, max_age=30*24*60*60)
         else:
             response.set_cookie('session', session_token)
@@ -61,11 +61,11 @@ def register():
     password = request.form.get('password')
     email = request.form.get('email')
     
-    # Vulnerable: No password complexity requirements
+                                                     
     if username and password and email:
         if username not in users:
             users[username] = {
-                'password': password,  # Vulnerable: Storing plain text passwords
+                'password': password,                                            
                 'email': email,
                 'role': 'user'
             }
@@ -79,15 +79,15 @@ def register():
 def reset_password():
     email = request.form.get('email')
     
-    # Vulnerable: Password reset token generation
+                                                 
     for username, user_data in users.items():
         if user_data['email'] == email:
-            # Vulnerable: Predictable token generation
+                                                      
             token = hashlib.md5(f"{email}:{datetime.now()}".encode()).hexdigest()
             password_reset_tokens[token] = username
             
-            # In a real application, this would send an email
-            # Vulnerable: Token exposed in response
+                                                             
+                                                   
             flash(f'Password reset link: /reset/{token}')
             return redirect(url_for('lab'))
     
@@ -107,7 +107,7 @@ def dashboard():
         return redirect(url_for('lab'))
     
     try:
-        # Vulnerable: Insecure session validation
+                                                 
         username = base64.b64decode(session_token).decode().split(':')[0]
         if username in users:
             return render_template('dashboard.html', 
@@ -120,4 +120,4 @@ def dashboard():
     return redirect(url_for('lab'))
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000, debug=True)  # Vulnerable: Debug mode enabled in production 
+    app.run(host='0.0.0.0', port=5000, debug=True)                                                 

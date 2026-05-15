@@ -1,14 +1,11 @@
-#!/usr/bin/env python3  
 import pathlib
 
 from setuptools import find_packages, setup
 
 here = pathlib.Path(__file__).parent.resolve()  
 
-# Get the long description from the README file  
 long_description = (here / "README.md").read_text(encoding="utf-8")  
 
-# Get a list of requirements  
 requirements = [i.strip() for i in open("requirements.txt").readlines()]  
 
 setup(

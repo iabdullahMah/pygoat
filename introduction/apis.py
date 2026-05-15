@@ -14,11 +14,11 @@ from .utility import *
 from .views import authentication_decorator
 
 
-# steps --> 
-# 1. covert input code to corrosponding code and write in file
-# 2. extract inputs form 2nd code 
-# 3. Run the code 
-# 4. get the result
+            
+                                                              
+                                  
+                  
+                   
 @csrf_exempt
 def ssrf_code_checker(request):
     if request.user.is_authenticated:
@@ -53,11 +53,11 @@ def ssrf_code_checker(request):
     else:
         return JsonResponse({'message':'UnAuthenticated User'},status = 401)
 
-# Insufficient Logging & Monitoring
+                                   
 
 
 @csrf_exempt
-# @authentication_decorator
+                           
 def log_function_checker(request):
     if request.method == 'POST':
         csrf_token = request.POST.get("csrfmiddlewaretoken")
@@ -72,7 +72,7 @@ def log_function_checker(request):
         f = open(api_filename,"w")
         f.write(api_code)
         f.close()
-        # Clearing the log file before starting the test
+                                                        
         f = open('test.log', 'w')
         f.write("")
         f.close()
@@ -89,7 +89,7 @@ def log_function_checker(request):
     else:
         return JsonResponse({"message":"method not allowed"},status = 405)
 
-#a7 codechecking api
+                    
 @csrf_exempt
 def A7_disscussion_api(request):
     if request.method != 'POST':
@@ -108,7 +108,7 @@ def A7_disscussion_api(request):
 
     return JsonResponse({"message":"failure"},status = 400)
 
-#a6 codechecking api
+                    
 @csrf_exempt
 def A6_disscussion_api(request):
     test_bench = ["Pillow==8.0.0","PyJWT==2.4.0","requests==2.28.0","Django==4.0.4"]
