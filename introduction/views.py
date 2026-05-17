@@ -931,19 +931,19 @@ def ssti(request):
 def ssti_lab(request):
     if request.user.is_authenticated:
         if request.method=="GET":
-            users_blogs = Blogs.objects.filter(author=request.user)
+            users_blogs = Blogs.objects.filter(author=request.user) # SINK: search user blogs, not taking value from user, safe.
             return render(request,"Lab_2021/A3_Injection/ssti_lab.html", {"blogs":users_blogs})
         elif request.method=="POST":
-            blog = request.POST["blog"]
-            id = str(uuid.uuid4()).split('-')[-1]
+            blog = request.POST["blog"] #SOURCE: taking blog content from user input, unsafe. 
+            id = str(uuid.uuid4()).split('-')[-1] 
 
-            blog = filter_blog(blog)
+            blog = filter_blog(blog) #TAINT: filter the user input, it's empty function, so not actually filtering anything.
             prepend_code = "{% extends 'introduction/base.html' %}\
                 {% block content %}{% block title %}\
                 <title>SSTI-Blogs</title>\
                 {% endblock %}"
             
-            blog = prepend_code + blog + "{% endblock %}"
+            blog = prepend_code + blog + "{% endblock %}" # VULN: concatenating the user input to code, vulnerable to SSTI.
             new_blog = Blogs.objects.create(author = request.user, blog_id = id)
             new_blog.save() 
             dirname = os.path.dirname(__file__)
